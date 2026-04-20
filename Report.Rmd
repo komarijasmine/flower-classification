@@ -1,0 +1,22 @@
+---
+title: "Report"
+output: html_document
+---
+
+```{r}
+data(iris)
+d<-iris
+
+
+library(tidyverse)
+x0 <- d %>% filter(Species=="versicolor") %>% select(3:4)
+x1 <- d %>% filter(Species=="virginica") %>% select(3:4)
+
+width <- seq(0, 3)
+length<- seq(0, 7)
+```
+
+```{r}
+plot(width, length, xlab="Width", ylab="Length")
+
+``

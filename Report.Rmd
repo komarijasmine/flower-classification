@@ -7,13 +7,99 @@ output: html_document
 data(iris)
 d<-iris
 
-
 library(tidyverse)
+# x0 <- d %>% filter(Species=="versicolor") %>% select(3:4)
+# x1 <- d %>% filter(Species=="virginica") %>% select(3:4)
+
+iris %>%
+  filter(Species %in% c("versicolor", "virginica")) %>%
+  ggplot(aes(x = Petal.Length, y = Petal.Width, color = Species)) +
+  geom_point()
+```
+
+If the flower has petal length of 4.0 and petal width of 1.1, then we would assume it is a versicolor. Likewise, if the length is 6 and its width is 2.3, we would assume it is a virginica. If its length is 5.0 and width is 1.7, with a K-nearest neighbor model with K=3, it would be classified as a versicolor. However, with a different K value, the classification may be different. 
+
+```{r}
+
+rbinorm <- function(n, mu1, mu2, rho, sigma1sq, sigma2sq) {
+  # returns a n x 2 matrix, each row is 
+  sigma1 <- sqrt(sigma1sq)
+  sigma2 <- sqrt(sigma2sq)
+  
+  u <- rnorm(n)
+  v <- rnorm(n)
+  
+  x1 <- mu1 + sigma1 * sqrt(1 - rho^2) * u + sigma1 * rho * v
+  x2 <- mu2 + sigma2 * v
+  
+  return(cbind(x1, x2))
+}
+
+# rho = -0.7
+genpoints<-rbinorm(50, 1, 3, -0.7, 1, 2)
+plot(genpoints, xlab="X1", ylab="X2")
+
+# rho = 0.1
+genpoints<-rbinorm(50, 1, 3, 0.1, 1, 2)
+plot(genpoints, xlab="X1", ylab="X2")
+
+# rho = 0.9
+genpoints<-rbinorm(50, 1, 3, 0.9, 1, 2)
+plot(genpoints, xlab="X1", ylab="X2")
+
+# testing with more samples to show elliptically contoured shape
+genpoints <- rbinorm(5000, mu1=1, mu2=3, rho=0.9, sigma1sq=1, sigma2sq=2)
+plot(genpoints, xlab="X1", ylab="X2")
+
+  
+```
+
+```{r}
+rbinorm <- function(n, mu1, mu2, rho, sigma1sq, sigma2sq) {
+  # returns a n x 2 matrix, each row is 
+  sigma1 <- sqrt(sigma1sq)
+  sigma2 <- sqrt(sigma2sq)
+  
+  u <- rnorm(n)
+  v <- rnorm(n)
+  
+  x1 <- mu1 + sigma1 * sqrt(1 - rho^2) * u + sigma1 * rho * v
+  x2 <- mu2 + sigma2 * v
+  
+  return(cbind(x1, x2))
+}
+
+M <- rbinorm(50, mu1=1, mu2=3, rho=0.7, sigma1sq=1, sigma2sq=3)
+colMeans(M)
+cov(M)
+
+N <- rbinorm(10000, mu1=1, mu2=3, rho=0.7, sigma1sq=1, sigma2sq=3)
+colMeans(N)
+cov(N)
+
+```
+
+Verify that, as the number of realiza- tions gets larger, we approximate μ and Σ with increasing precision.
+
+```{r}
+rbinorm <- function(n, mu1, mu2, rho, sigma1sq, sigma2sq) {
+  # returns a n x 2 matrix, each row is 
+  sigma1 <- sqrt(sigma1sq)
+  sigma2 <- sqrt(sigma2sq)
+  
+  u <- rnorm(n)
+  v <- rnorm(n)
+  
+  x1 <- mu1 + sigma1 * sqrt(1 - rho^2) * u + sigma1 * rho * v
+  x2 <- mu2 + sigma2 * v
+  
+  return(cbind(x1, x2))
+}
+
 x0 <- d %>% filter(Species=="versicolor") %>% select(3:4)
 x1 <- d %>% filter(Species=="virginica") %>% select(3:4)
 
-width <- seq(0, 3)
-length<- seq(0, 7)
 
-plot(x0, x1, xlab="Width", ylab="Length")
-``
+```
+
+

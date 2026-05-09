@@ -14,9 +14,6 @@ x1 <- d %>% filter(Species=="virginica") %>% select(3:4)
 
 width <- seq(0, 3)
 length<- seq(0, 7)
-```
 
-```{r}
-plot(width, length, xlab="Width", ylab="Length")
-
+plot(x0, x1, xlab="Width", ylab="Length")
 ``

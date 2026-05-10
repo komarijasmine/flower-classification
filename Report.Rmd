@@ -59,7 +59,7 @@ $$
 rbinorm <- function(n, mu1, mu2, rho, sigma1_sq, sigma2_sq) {
   # returns an n x 2 matrix
   # where each row is realization of the bivariate normal distribution
-  # 
+  
   sigma1 <- sqrt(sigma1_sq)
   sigma2 <- sqrt(sigma2_sq)
   
@@ -132,7 +132,19 @@ $$
 (K) ...
 
 ```{r}
-...
+classify <- function(width, length) {
+  # returns 0 if flower is of type 0
+  # and 1 if flower is of type 1
+  
+  r0_sq <- (...)
+  r1_sq <- (...)
+  
+  if (r0_sq < log(.../...) + 2*log(.../...) + r1_sq) {
+    return(0)
+  } else {
+    return(1)
+  }
+}
 ```
 
 [brief conclusion]

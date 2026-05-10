@@ -3,13 +3,18 @@ title: "Report"
 output: html_document
 ---
 
+**Flower classification project**
+*Komari Machida and Indigo Morgenstern*
+
+The purpose of this project is to develop a function in R that uses a bivariate normal distribution to classify a flower as either *iris versicolor* or *iris virginica* based on the width and length of its petals. For our training set, we use the built-in **iris** data package.
+
+(A) To start, we import the package and create an initial plot to demonstrate the overall trend of the respective species' petal lengths and widths.
+
 ```{r}
 data(iris)
 d<-iris
 
 library(tidyverse)
-# x0 <- d %>% filter(Species=="versicolor") %>% select(3:4)
-# x1 <- d %>% filter(Species=="virginica") %>% select(3:4)
 
 iris %>%
   filter(Species %in% c("versicolor", "virginica")) %>%
@@ -17,7 +22,39 @@ iris %>%
   geom_point()
 ```
 
-If the flower has petal length of 4.0 and petal width of 1.1, then we would assume it is a versicolor. Likewise, if the length is 6 and its width is 2.3, we would assume it is a virginica. If its length is 5.0 and width is 1.7, with a K-nearest neighbor model with K=3, it would be classified as a versicolor. However, with a different K value, the classification may be different. 
+(B) This initial graphic gives us a sense of how a human could classify a flower given the available data. For instance, if the flower has petal length of 4.0 and petal width of 1.1, then we can assume it is a *versicolor.* Likewise, if the length is 6 and its width is 2.3, we can assume it is a *virginica.*
+
+However, if the length is 5.0 and width is 1.7, it is unclear which species it is most likely to be. Using a K-nearest-neighbor algorithm with K=3, it would be classified as a *versicolor.* However, with K=5, it would be classified as a *viriginica.*
+
+(C) In the interest of a more rigorous mathematical classification model, we turn to Bayes' rule to derive a classification rule based on the probability of the flower being one type as opposed to another:
+
+$$
+\begin{aligned}
+  P(Y=0|X=x) &> P(Y=1|X=x) \\
+  \frac{p_0f_0(x)}{p_0f_0(x)+p_1f_1(x)} &> \frac{p_1f_1(x)}{p_0(x)f_0(x)+p_1(x)f_1(x)} \\
+  p_0f_0(x) &> p_1f_1(x)
+\end{aligned}
+$$
+[add explanations in derivation above? nahh]
+
+(D) Because we don't know the exact values of the variables in the derived inequality, we must estimate them. To start, we can use the following unbiased estimator for $p_0$:
+
+$$
+\hat{p_0} = \frac{\text{number of flowers of type 0 in the training set}}{\text{total number of flowers in the training set}}
+$$
+We know it is unbiased because its bias is zero. This is because [explanation of how to get from line 1 to line 2: probability of the flower being one type or the other follows a bernoulli distribution (two discrete outcomes) and expected value is the same as the probability of a given outcome for a bernoulli distribution], and is shown in the derivation below.
+
+$$
+\begin{aligned}
+B(\hat{p_0}) &= E(\hat{p_0}) - p_0 \\
+B(\hat{p_0}) &= P(Y_i = 0) - P(Y_i = 0) \\
+B(\hat{p_0}) &= 0
+\end{aligned}
+$$
+
+(E) [rbinorm function introduction]
+
+(F) [sampling points + demonstrating elliptical contouring... make sure figures are labelled nicely]
 
 ```{r}
 
@@ -55,19 +92,21 @@ plot(genpoints, xlab="X1", ylab="X2")
 ```
 
 ```{r}
-rbinorm <- function(n, mu1, mu2, rho, sigma1sq, sigma2sq) {
+## i think we can delete the function below if we just run all the code chunks at once
+
+#rbinorm <- function(n, mu1, mu2, rho, #sigma1sq, sigma2sq) {
   # returns a n x 2 matrix, each row is 
-  sigma1 <- sqrt(sigma1sq)
-  sigma2 <- sqrt(sigma2sq)
+#  sigma1 <- sqrt(sigma1sq)
+#  sigma2 <- sqrt(sigma2sq)
+#  
+#  u <- rnorm(n)
+#  v <- rnorm(n)
+#  
+#  x1 <- mu1 + sigma1 * sqrt(1 - rho^2) * u + sigma1 * rho * 
+#  x2 <- mu2 + sigma2 * v
   
-  u <- rnorm(n)
-  v <- rnorm(n)
-  
-  x1 <- mu1 + sigma1 * sqrt(1 - rho^2) * u + sigma1 * rho * v
-  x2 <- mu2 + sigma2 * v
-  
-  return(cbind(x1, x2))
-}
+#  return(cbind(x1, x2))
+#}
 
 M <- rbinorm(50, mu1=1, mu2=3, rho=0.7, sigma1sq=1, sigma2sq=3)
 colMeans(M)
@@ -79,7 +118,7 @@ cov(N)
 
 ```
 
-Verify that, as the number of realiza- tions gets larger, we approximate μ and Σ with increasing precision.
+(G) [Verify that, as the number of realiza- tions gets larger, we approximate μ and Σ with increasing precision.]
 
 ```{r}
 rbinorm <- function(n, mu1, mu2, rho, sigma1sq, sigma2sq) {

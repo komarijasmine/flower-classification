@@ -52,16 +52,16 @@ B(\hat{p_0}) &= 0
 \end{aligned}
 $$
 
-(E) [rbinorm function introduction]
-
-(F) [sampling points + demonstrating elliptical contouring... make sure figures are labelled nicely]
+(E, F) To get a sense of the bivariate normal distribution and whether it's suitable for our problem, we create the **rbinorm** function to randomly generate pairs (that could represent, for instance, length and width measurements), then observe how the contour of the generated points changes as the values of the function's paramaters are adjusted. The last of the figures below shows that the cloud of randomly generated points approaches an elliptical contour as the number of points generated increases.
 
 ```{r}
 
-rbinorm <- function(n, mu1, mu2, rho, sigma1sq, sigma2sq) {
-  # returns a n x 2 matrix, each row is 
-  sigma1 <- sqrt(sigma1sq)
-  sigma2 <- sqrt(sigma2sq)
+rbinorm <- function(n, mu1, mu2, rho, sigma1_sq, sigma2_sq) {
+  # returns an n x 2 matrix
+  # where each row is realization of the bivariate normal distribution
+  # 
+  sigma1 <- sqrt(sigma1_sq)
+  sigma2 <- sqrt(sigma2_sq)
   
   u <- rnorm(n)
   v <- rnorm(n)
@@ -85,60 +85,54 @@ genpoints<-rbinorm(50, 1, 3, 0.9, 1, 2)
 plot(genpoints, xlab="X1", ylab="X2")
 
 # testing with more samples to show elliptically contoured shape
-genpoints <- rbinorm(5000, mu1=1, mu2=3, rho=0.9, sigma1sq=1, sigma2sq=2)
+genpoints <- rbinorm(5000, 1, 3, 0.9, 1, 2)
 plot(genpoints, xlab="X1", ylab="X2")
 
   
 ```
 
+(G) [intro + explanation] [Verify that, as the number of realiza- tions gets larger, we approximate μ and Σ with increasing precision.]
+
 ```{r}
-## i think we can delete the function below if we just run all the code chunks at once
 
-#rbinorm <- function(n, mu1, mu2, rho, #sigma1sq, sigma2sq) {
-  # returns a n x 2 matrix, each row is 
-#  sigma1 <- sqrt(sigma1sq)
-#  sigma2 <- sqrt(sigma2sq)
-#  
-#  u <- rnorm(n)
-#  v <- rnorm(n)
-#  
-#  x1 <- mu1 + sigma1 * sqrt(1 - rho^2) * u + sigma1 * rho * 
-#  x2 <- mu2 + sigma2 * v
-  
-#  return(cbind(x1, x2))
-#}
-
-M <- rbinorm(50, mu1=1, mu2=3, rho=0.7, sigma1sq=1, sigma2sq=3)
+M <- rbinorm(50, 1, 3, 0.7, 1, 3)
 colMeans(M)
 cov(M)
 
-N <- rbinorm(10000, mu1=1, mu2=3, rho=0.7, sigma1sq=1, sigma2sq=3)
+N <- rbinorm(10000, 1, 3, 0.7, 1, 3)
 colMeans(N)
 cov(N)
 
 ```
-
-(G) [Verify that, as the number of realiza- tions gets larger, we approximate μ and Σ with increasing precision.]
+(H, I) ...
 
 ```{r}
-rbinorm <- function(n, mu1, mu2, rho, sigma1sq, sigma2sq) {
-  # returns a n x 2 matrix, each row is 
-  sigma1 <- sqrt(sigma1sq)
-  sigma2 <- sqrt(sigma2sq)
-  
-  u <- rnorm(n)
-  v <- rnorm(n)
-  
-  x1 <- mu1 + sigma1 * sqrt(1 - rho^2) * u + sigma1 * rho * v
-  x2 <- mu2 + sigma2 * v
-  
-  return(cbind(x1, x2))
-}
-
-x0 <- d %>% filter(Species=="versicolor") %>% select(3:4)
-x1 <- d %>% filter(Species=="virginica") %>% select(3:4)
-
-
+...
 ```
 
+(J) ...
 
+$$
+
+\begin{aligned}
+
+  p_0f_0(x) &> p_1f_1(x) \\
+  \hat{p_0}(\frac{1}{2\pi\sqrt{\text{det}\hat{\Sigma}}_0})e^{-\frac{1}{2}r_0^2(x)} &> \hat{p_1}(\frac{1}{2\pi\sqrt{\text{det}\hat{\Sigma}}_1})e^{-\frac{1}{2}r_1^2(x)} \\
+  (\frac{\hat{p_0}}{\sqrt{\text{det}\hat{\Sigma}}_0})e^{-\frac{1}{2}r_0^2(x)} &> (\frac{\hat{p_1}}{\sqrt{\text{det}\hat{\Sigma}}_1})e^{-\frac{1}{2}r_1^2(x)} \\
+  \frac{\hat{p_0}}{\hat{p_1}}\frac{\sqrt{\text{det}\hat{\Sigma}_1}}{\sqrt{\text{det}\hat{\Sigma}_0}}\frac{e^{-\frac{1}{2}r^2_0(x)}}{e^{-\frac{1}{2}r^2_1(x)}} &> 1 \\
+  \log{\frac{\hat{p_0}}{\hat{p_1}}\frac{\sqrt{\text{det}\hat{\Sigma}_1}}{\sqrt{\text{det}\hat{\Sigma}_0}}\frac{e^{-\frac{1}{2}r^2_0(x)}}{e^{-\frac{1}{2}r^2_1(x)}}} &> \log{1} \\
+  \log{\frac{\hat{p_0}}{\hat{p_1}}} + \log{\frac{\sqrt{\text{det}\hat{\Sigma}_1}}{\sqrt{\text{det}\hat{\Sigma}_0}}} + \log{\frac{e^{-\frac{1}{2}r^2_0(x)}}{e^{-\frac{1}{2}r^2_1(x)}}} &> 0 \\
+  \log{\frac{\hat{p_0}}{\hat{p_1}}} + \frac{1}{2}\log{\frac{\text{det}\hat{\Sigma}_1}{\text{det}\hat{\Sigma}_0}} + \frac{1}{2}(r^2_1(x) - r^2_0(x)) &> 0 \\
+  2\log{\frac{\hat{p_0}}{\hat{p_1}}} + \log{\frac{\text{det}\hat{\Sigma}_1}{\text{det}\hat{\Sigma}_0}} + (r^2_1(x) - r^2_0(x)) &> 0 \\
+  2\log{\frac{\hat{p_0}}{\hat{p_1}}} + \log{\frac{\text{det}\hat{\Sigma}_1}{\text{det}\hat{\Sigma}_0}} + r^2_1(x) &> r^2_0(x) \\
+
+\end{aligned}
+
+$$
+(K) ...
+
+```{r}
+...
+```
+
+[brief conclusion]

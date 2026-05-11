@@ -16,6 +16,9 @@ d<-iris
 
 library(tidyverse)
 
+x0 <- d %>% filter(Species=="versicolor") %>% select(3:4)
+x1 <- d %>% filter(Species=="virginica") %>% select(3:4)
+
 iris %>%
   filter(Species %in% c("versicolor", "virginica")) %>%
   ggplot(aes(x = Petal.Length, y = Petal.Width, color = Species)) +
@@ -107,7 +110,15 @@ cov(N)
 (H, I) ...
 
 ```{r}
-...
+mu0_hat <- colMeans(x0) # vector of width and length averages for versicolor
+mu1_hat <- colMeans(x1) # vector of width and length averages for virginica
+
+sigma0_hat <- cov(x0) # variance-covariance matrix for versicolor
+sigma1_hat <- cov(x1) # variance-covariance matrix for viriginica
+
+p0_hat <- sum(iris$Species == "versicolor") / sum(iris$Species %in% c("versicolor", "virginica"))
+p1_hat <- p0_hat <- sum(iris$Species == "virginica") /
+  sum(iris$Species %in% c("versicolor", "virginica"))
 ```
 
 (J) ...
@@ -132,19 +143,28 @@ $$
 (K) ...
 
 ```{r}
-classify <- function(width, length) {
-  # returns 0 if flower is of type 0
-  # and 1 if flower is of type 1
+
+classify <- function(length, width) {
+  # returns 0 if flower is of type 0 (versicolor)
+  # and 1 if flower is of type 1 (virginica)
   
-  r0_sq <- (...)
-  r1_sq <- (...)
+  x <- matrix(c(length, width), ncol = 1)
   
-  if (r0_sq < log(.../...) + 2*log(.../...) + r1_sq) {
+  r0_sq <- as.numeric(t(x - mu0_hat) %*% solve(sigma0_hat) %*% (x - mu0_hat))
+  r1_sq <- as.numeric(t(x - mu1_hat) %*% solve(sigma1_hat) %*% (x - mu1_hat))
+  
+  if (r0_sq < log(det(sigma1_hat)/det(sigma0_hat)) + 2*log(p0_hat/p1_hat) + r1_sq) {
     return(0)
   } else {
     return(1)
   }
 }
+
+classify(5, 1.8)
+
+classify(4.5, 1.5) # should return type 0
+classify(5.75, 1.75) # type 1
+classify(4.75, 2.2) # type 1
 ```
 
 [brief conclusion]

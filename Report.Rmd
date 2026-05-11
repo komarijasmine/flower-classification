@@ -4,7 +4,7 @@ output: html_document
 ---
 
 **Flower classification project**
-*Komari Machida and Indigo Morgenstern*
+*by Komari Machida and Indigo Morgenstern*
 
 The purpose of this project is to develop a function in R that uses a bivariate normal distribution to classify a flower as either *iris versicolor* or *iris virginica* based on the width and length of its petals. For our training set, we use the built-in **iris** data package.
 
@@ -38,8 +38,6 @@ $$
   p_0f_0(x) &> p_1f_1(x)
 \end{aligned}
 $$
-[add explanations in derivation above? nahh]
-
 (D) Because we don't know the exact values of the variables in the derived inequality, we must estimate them. To start, we can use the following unbiased estimator for $p_0$:
 
 $$
@@ -94,7 +92,7 @@ plot(genpoints, xlab="X1", ylab="X2")
   
 ```
 
-(G) [intro + explanation] [Verify that, as the number of realiza- tions gets larger, we approximate μ and Σ with increasing precision.]
+(G) We choose colMeans() and cov() to estimate mu and sigma respectively. As shown below, the values of the estimated mu and sigma approach the given values of mu and sigma as the number of realizations increases.
 
 ```{r}
 
@@ -107,7 +105,7 @@ colMeans(N)
 cov(N)
 
 ```
-(H, I) ...
+(H, I) Because colMeans() and cov() are good for estimating mu and sigma, we designate the estimated values of mu and sigma for the versicolor and viriginica datasets below.
 
 ```{r}
 mu0_hat <- colMeans(x0) # vector of width and length averages for versicolor
@@ -115,18 +113,15 @@ mu1_hat <- colMeans(x1) # vector of width and length averages for virginica
 
 sigma0_hat <- cov(x0) # variance-covariance matrix for versicolor
 sigma1_hat <- cov(x1) # variance-covariance matrix for viriginica
-
-p0_hat <- sum(iris$Species == "versicolor") / sum(iris$Species %in% c("versicolor", "virginica"))
-p1_hat <- p0_hat <- sum(iris$Species == "virginica") /
-  sum(iris$Species %in% c("versicolor", "virginica"))
 ```
 
-(J) ...
+(J) From the classification rule derived in (C) and the equation for the bivariate normal probability distribution function, we can derive a classification rule based on estimated p, mu, and sigma values, as proven below.
 
 $$
 
 \begin{aligned}
 
+  \text{let } \hat{r}_k^2(x) &= (x-\hat{\mu}_k)^T\hat{\Sigma}_k^{-1}(x-\hat{\mu}_k) \\[8pt]
   p_0f_0(x) &> p_1f_1(x) \\
   \hat{p_0}(\frac{1}{2\pi\sqrt{\text{det}\hat{\Sigma}}_0})e^{-\frac{1}{2}r_0^2(x)} &> \hat{p_1}(\frac{1}{2\pi\sqrt{\text{det}\hat{\Sigma}}_1})e^{-\frac{1}{2}r_1^2(x)} \\
   (\frac{\hat{p_0}}{\sqrt{\text{det}\hat{\Sigma}}_0})e^{-\frac{1}{2}r_0^2(x)} &> (\frac{\hat{p_1}}{\sqrt{\text{det}\hat{\Sigma}}_1})e^{-\frac{1}{2}r_1^2(x)} \\
@@ -140,9 +135,15 @@ $$
 \end{aligned}
 
 $$
-(K) ...
+(K) Finally, we can implement this classification rule in a simple function! Our p values are estimated using the method determined in (D).
+
+To verify that the function works, we test it with several length-width pairs and compare the outputs to what would be expected from the graph produced in (A). We find that its classification is accurate! For example, if length is 5 cm and width is 1.8 cm, we expect the flower to be a virginica, which matches the output of our function.
 
 ```{r}
+
+p0_hat <- sum(iris$Species == "versicolor") / sum(iris$Species %in% c("versicolor", "virginica"))
+p1_hat <- p0_hat <- sum(iris$Species == "virginica") /
+  sum(iris$Species %in% c("versicolor", "virginica"))
 
 classify <- function(length, width) {
   # returns 0 if flower is of type 0 (versicolor)
@@ -167,4 +168,4 @@ classify(5.75, 1.75) # type 1
 classify(4.75, 2.2) # type 1
 ```
 
-[brief conclusion]
+This project is an example of how the bivariate normal distribution can serve as a useful model, and how, when combined with Bayes' rule, it can be used for automatic classification based on point estimators from a set of training data.

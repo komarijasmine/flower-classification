@@ -43,7 +43,7 @@ $$
 $$
 \hat{p_0} = \frac{\text{number of flowers of type 0 in the training set}}{\text{total number of flowers in the training set}}
 $$
-We know it is unbiased because its bias is zero. This is because [explanation of how to get from line 1 to line 2: probability of the flower being one type or the other follows a bernoulli distribution (two discrete outcomes) and expected value is the same as the probability of a given outcome for a bernoulli distribution], and is shown in the derivation below.
+We know it is unbiased because its bias is zero. This is because the probability of the flower being one type or the other follows a Bernoulli distribution (two discrete outcomes) and for a Bernoulli distribution, the expected value is the same as the probability of one outcome.
 
 $$
 \begin{aligned}
